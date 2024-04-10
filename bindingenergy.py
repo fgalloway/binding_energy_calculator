@@ -7,26 +7,33 @@ import argparse
 import numpy as np
 from pathlib import Path
 
-# ----
+
+# -----
 # Constants
 # -----
-SIGMA=3.41e-10
-EPSILON=1.65e-21
+# Default constants
+_SIGMA=3.41e-10
+_EPSILON=1.65e-21
 
 
-def calculate_binding_energy(r):
+# -----
+# Functions
+# -----
+def calculate_binding_energy(r, sigma=_SIGMA, epsilon=_EPSILON):
     """
     Calculate the binding energy between two objects separated by distance r.
     """
-    be = 4 * EPSILON * ((SIGMA / r) ** 12 - (SIGMA / r) ** 6)
+    be = 4 * epsilon * ((sigma / r) ** 12 - (sigma / r) ** 6)
     return be
 
 
-def total_binding_energy(object_distances):
+def total_binding_energy(object_distances, sigma=_SIGMA, epsilon=_EPSILON):
     """
     Calculate total binding energy for all pairwise distances.
     """
-    total_energy = sum(calculate_binding_energy(r) for r in object_distances)
+    total_energy = sum(
+        calculate_binding_energy(r, sigma, epsilon) for r in object_distances
+    )
     return total_energy
 
 
@@ -37,6 +44,9 @@ def read_object_distances(file_path):
     return distances
 
 
+# -----
+# Main program
+# -----
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Calculate the total binding energy of objects based on pairwise distances.")
     input_group = parser.add_mutually_exclusive_group(required=True)
