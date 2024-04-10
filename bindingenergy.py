@@ -23,24 +23,32 @@ def binding_energy(r, sigma=_SIGMA, epsilon=_EPSILON):
     """
     Calculate the binding energy between two objects separated by distance r.
     """
-    be = 4 * epsilon * ((sigma / r) ** 12 - (sigma / r) ** 6)
-    return be
+
+    # For vectorised calculation, r must be a 1D array
+    r = np.asarray(r)
+    r = np.atleast_1d(r)
+    be = 4 * epsilon * (np.power(sigma / r, 12) - np.power(sigma / r, 6))
+
+    # Return a scalar if r was originally a scalar
+    if len(r) == 1:
+        return be[0]
+    else:
+        return be
 
 
-def total_binding_energy(object_distances, sigma=_SIGMA, epsilon=_EPSILON):
+def total_binding_energy(r, sigma=_SIGMA, epsilon=_EPSILON):
     """
     Calculate total binding energy for all pairwise distances.
     """
-    total_energy = sum(
-        binding_energy(r, sigma, epsilon) for r in object_distances
-    )
-    return total_energy
+    total_be = np.sum(binding_energy(r, sigma, epsilon))
+    return total_be
 
 
 def read_object_distances(file_path):
     """Read pairwise object distances from a file."""
-    with open(file_path, "rt") as fh:
-        distances = [float(line.strip()) for line in fh]
+    
+    # Want an array, so use numpy to read the file
+    distances = np.loadtxt(fname=file_path, dtype=float)
     return distances
 
 
