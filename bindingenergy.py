@@ -19,7 +19,7 @@ _EPSILON=1.65e-21
 # -----
 # Functions
 # -----
-def calculate_binding_energy(r, sigma=_SIGMA, epsilon=_EPSILON):
+def binding_energy(r, sigma=_SIGMA, epsilon=_EPSILON):
     """
     Calculate the binding energy between two objects separated by distance r.
     """
@@ -32,7 +32,7 @@ def total_binding_energy(object_distances, sigma=_SIGMA, epsilon=_EPSILON):
     Calculate total binding energy for all pairwise distances.
     """
     total_energy = sum(
-        calculate_binding_energy(r, sigma, epsilon) for r in object_distances
+        binding_energy(r, sigma, epsilon) for r in object_distances
     )
     return total_energy
 
