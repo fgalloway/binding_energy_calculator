@@ -1,6 +1,8 @@
 # test_bindingenergy.py
 import pytest
-from bindingenergy import binding_energy
+import bindingenergy
+
+binding_energy = bindingenergy.binding_energy
 
 
 def test_calculate_binding_energy_zero():
@@ -18,9 +20,25 @@ def test_calculate_binding_energy_negative():
     assert calculated_energy < 0, "The calculated energy should be negative."
 
 
-def test_calculate_binding_energy_known():
-    """Test r for a known resulting energy"""
-    r = 6.82e-10
-    expected_energy = -1.0e-22
+def test_calculate_binding_energy_positive():
+    """Test r > sigma, expect binding energy to be negative."""
+    r = 3e-10  # m
     calculated_energy = binding_energy(r)
-    assert calculated_energy == pytest.approx(expected_energy)
+    assert calculated_energy > 0, "The calculated energy should be positive."
+
+
+def test_calculate_binding_energy_2sigma():
+    """Test when r = 2*sigma. Result can be calculated."""
+    r = 2*bindingenergy._SIGMA  # 6.82e-10
+    epsilon = bindingenergy._EPSILON
+    expected_energy = 4*epsilon*(1/2**12 - 1/2**6)  # -1.0e-22
+    calculated_energy = binding_energy(r)
+    assert calculated_energy == pytest.approx(expected_energy), "The calcuated energy should be -1.0e-22"
+
+
+def test_calculate_binding_energy_min():
+    """Test min(u(r)). Result can be calculated."""
+    r = 2**(1/6)*bindingenergy._SIGMA  # du/dr = 0
+    expected_energy = -bindingenergy._EPSILON  # model behaviour
+    calculated_energy = binding_energy(r)
+    assert calculated_energy == pytest.approx(expected_energy), "The calcuated energy should be -1.65e-10"
